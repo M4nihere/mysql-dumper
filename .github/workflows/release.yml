@@ -40,12 +40,13 @@ jobs:
         run: |
           cd dist
           tar -czvf backup-agent-linux-${{ matrix.goarch }}.tar.gz backup-agent-linux-${{ matrix.goarch }}
+          rm backup-agent-linux-${{ matrix.goarch }}   # keep the release clean
 
-      - name: Upload artifacts
+      - name: Upload archive artifact
         uses: actions/upload-artifact@v4
         with:
-          name: linux-${{ matrix.goarch }}
-          path: dist/*
+          name: backup-agent-linux-${{ matrix.goarch }}
+          path: dist/backup-agent-linux-${{ matrix.goarch }}.tar.gz
 
   release:
     needs: build-linux
@@ -55,10 +56,9 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: linux-*
           path: dist
 
-      - name: Create GitHub Release
+      - name: Publish GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/*
+          files: dist/**/*.tar.gz
