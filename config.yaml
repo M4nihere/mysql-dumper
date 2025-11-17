@@ -1,0 +1,18 @@
+mysql:
+  host: "127.0.0.1"
+  port: 3306
+  username: "orbitpay_user"
+  password: "32W!nS1AmOA@=4OZ"
+  databases:
+    - "orbitpay_staging"
+    - "orbitpay_infra"
+
+backup:
+  base_dir: "/root/backupGo/new_backup/files"
+  runs_per_day: 4
+  retention_days: 7
+  threads: 8
+  timeout_seconds: 3600
+
+agent:
+  status_db: "/var/backups/mysql/status.db"
