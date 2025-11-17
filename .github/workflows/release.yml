@@ -1,0 +1,64 @@
+name: Build Linux Binaries
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-linux:
+    name: Build for Linux (amd64 + arm64)
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        goarch: [amd64, arm64]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Build binary
+        run: |
+          mkdir -p dist
+
+          CGO_ENABLED=0 \
+          GOOS=linux \
+          GOARCH=${{ matrix.goarch }} \
+          go build -o dist/backup-agent-linux-${{ matrix.goarch }} .
+
+      - name: Archive binary
+        run: |
+          cd dist
+          tar -czvf backup-agent-linux-${{ matrix.goarch }}.tar.gz backup-agent-linux-${{ matrix.goarch }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-binaries
+          path: dist/*
+
+  release:
+    needs: build-linux
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-binaries
+          path: dist
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*
