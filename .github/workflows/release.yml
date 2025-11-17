@@ -40,6 +40,7 @@ jobs:
         run: |
           cd dist
           tar -czvf backup-agent-linux-${{ matrix.goarch }}.tar.gz backup-agent-linux-${{ matrix.goarch }}
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -54,7 +55,7 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          name: linux-binaries
+          pattern: linux-*
           path: dist
 
       - name: Create GitHub Release
