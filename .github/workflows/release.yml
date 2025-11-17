@@ -40,11 +40,10 @@ jobs:
         run: |
           cd dist
           tar -czvf backup-agent-linux-${{ matrix.goarch }}.tar.gz backup-agent-linux-${{ matrix.goarch }}
-
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: linux-binaries
+          name: linux-${{ matrix.goarch }}
           path: dist/*
 
   release:
